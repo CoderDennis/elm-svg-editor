@@ -58,8 +58,11 @@ update msg ({ mouse } as model) =
             let
                 nextMouse =
                     { mouse | svgPosition = pos }
+
+                nextModel =
+                    handleDrag pos model
             in
-                { model | mouse = nextMouse } ! []
+                { nextModel | mouse = nextMouse } ! []
 
         ModifyShape shapeId shapeMsg ->
             { model
