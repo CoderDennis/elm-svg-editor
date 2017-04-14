@@ -160,6 +160,49 @@ handleDragAction dragAction shapeId shape pos ({ mouse } as model) =
                                         | cx = circleModel.cx - dragDiffX
                                         , cy = circleModel.cy - dragDiffY
                                     }
+
+                DragResize ->
+                    case ( shape, model.comparedShape ) of
+                        ( Circle circleModel, Just (Circle compCircle) ) ->
+                            let
+                                newRX =
+                                    abs (pos.x - circleModel.cx)
+
+                                newRY =
+                                    abs (pos.y - circleModel.cy)
+
+                                newR =
+                                    max newRX newRY
+                            in
+                                Circle
+                                    { circleModel
+                                        | r = newR
+                                    }
+
+                        ( Rect rectModel, Just (Rect compRect) ) ->
+                            let
+                                ( newX, newWidth ) =
+                                    if pos.x <= compRect.x then
+                                        ( pos.x, compRect.x - pos.x )
+                                    else
+                                        ( compRect.x, pos.x - compRect.x )
+
+                                ( newY, newHeight ) =
+                                    if pos.y <= compRect.y then
+                                        ( pos.y, compRect.y - pos.y )
+                                    else
+                                        ( compRect.y, pos.y - compRect.y )
+                            in
+                                Rect
+                                    { rectModel
+                                        | width = newWidth
+                                        , height = newHeight
+                                        , x = newX
+                                        , y = newY
+                                    }
+
+                        _ ->
+                            shape
     in
         { model
             | shapes =
